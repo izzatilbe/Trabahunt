@@ -56,11 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
                     String uid = current_user.getUid();
 
                     mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
-
-                    HashMap<String, String> userMap = new HashMap<>();
-                    userMap.put("Type", type);
-
-                    mDatabase.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    mDatabase.child("Type").setValue(type).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
@@ -73,7 +69,6 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                         }
                     });
-
 
                 }
 

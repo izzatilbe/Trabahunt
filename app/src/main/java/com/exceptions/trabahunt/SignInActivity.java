@@ -130,21 +130,31 @@ public class SignInActivity extends AppCompatActivity implements
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                    if(dataSnapshot.child(uid).hasChild("Type")) {
+                                    if(dataSnapshot.child(uid).child("Type").exists()) {
                                         startActivity(new Intent(SignInActivity.this, MainActivity.class));
                                         finish();
                                     } else {
 
                                         HashMap<String, String> userMap = new HashMap<>();
-                                        userMap.put("fname", acct.getGivenName());
-                                        userMap.put("lname", acct.getFamilyName());
+                                        userMap.put("Fname", acct.getGivenName());
+                                        userMap.put("Lname", acct.getFamilyName());
+                                        userMap.put("Type", null);
 
                                         mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
-                                        mDatabase.setValue(userMap);
+                                        mDatabase.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
 
-                                        Intent regIntent = new Intent(SignInActivity.this, RegisterActivity.class);
-                                        startActivity(regIntent);
-                                        finish();
+                                                if (task.isSuccessful()) {
+
+                                                    Intent mainIntent = new Intent(SignInActivity.this, RegisterActivity.class);
+                                                    mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    startActivity(mainIntent);
+                                                    finish();
+                                                }
+                                            }
+                                        });
+
                                     }
 
                                 }
