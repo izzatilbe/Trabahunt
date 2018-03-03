@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Trabahunt</string>
+    <string name="display_name">Display Name</string>
+    <string name="email">Email</string>
+    <string name="select_account">Select account type</string>
+    <string name="create_account">CREATE ACCOUNT</string>
+    <string name="log_out">Log Out</string>
+</resources>
