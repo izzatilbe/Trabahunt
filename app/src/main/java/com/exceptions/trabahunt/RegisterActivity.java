@@ -80,7 +80,20 @@ public class RegisterActivity extends AppCompatActivity {
                 if (mGiverRb.isChecked())
                     type = "Giver";
 
+                if (type == "Seeker") {
+                    HashMap<String, String> seekMap = new HashMap<>();
+                    seekMap.put(uid, String.valueOf(mPhone.getText()));
+                    mRootRef.child("Seekers").setValue(seekMap);
+                }
+                if (type == "Giver") {
+                    HashMap<String, String> giveMap = new HashMap<>();
+                    giveMap.put(uid, String.valueOf(mPhone.getText()));
+                    mRootRef.child("Givers").setValue(giveMap);
+                }
+
                 register_user(type);
+
+
             }
         });
     }
@@ -92,7 +105,11 @@ public class RegisterActivity extends AppCompatActivity {
         HashMap<String, String> photoMap = new HashMap<>();
         photoMap.put("Photo", download_url);
 
+
+        photoMap.put("Photo", download_url);
+
         mRootRef.child("Images").child(uid).setValue(photoMap);
+
         mDatabase.child("Type").setValue(type).addOnCompleteListener(new OnCompleteListener<Void>(){
             @Override
             public void onComplete(@NonNull Task<Void> task) {
