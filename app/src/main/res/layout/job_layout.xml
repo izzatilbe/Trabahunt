@@ -24,7 +24,7 @@
         android:text="Name" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView3"
@@ -54,8 +54,8 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/textView2"
-        android:layout_alignBottom="@+id/textView2"
+        android:layout_alignBaseline="@+id/Name"
+        android:layout_alignBottom="@+id/Name"
         android:layout_alignStart="@+id/textView4"
         android:text="Price" />
 </RelativeLayout>

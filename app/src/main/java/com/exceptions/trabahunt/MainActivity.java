@@ -1,26 +1,29 @@
 package com.exceptions.trabahunt;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private DatabaseReference mUserRef;
+    private ImageView mPhoto;
+    private DatabaseReference mRootRef;
+    String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mPhoto = findViewById(R.id.imageView);
         mAuth = FirebaseAuth.getInstance();
+        mRootRef = FirebaseDatabase.getInstance().getReference();
     }
 
 
@@ -31,8 +34,7 @@ public class MainActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
 
         if (mAuth.getCurrentUser() != null) {
-            FirebaseUser currentUser = mAuth.getCurrentUser();
-            //TODO code here
+
         } else {
             sendToSignIn();
         }
