@@ -19,35 +19,53 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 
 public class JobPostingActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
     protected GeoDataClient mGeoDataClient;
     protected PlaceDetectionClient mPlaceDetectionClient;
+    private DatabaseReference mRootRef;
+    private String uid;
+    private FirebaseAuth mAuth;
+
     int REQUEST_PLACE_PICKER = 1;
-    EditText jobLoc, jobSched;
-    Button location, schedule;
+    EditText jobTitle, jobDescription, jobLoc, jobSched, jobPay;
+    Button location, schedule, postJob;
 
     int day, month, year, hour, minutes;
     int dayFinal, monthFinal, yearFinal, hourFinal, minutesFinal;
+
+    String jobid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job_posting);
-
+        mAuth = FirebaseAuth.getInstance();
+        mRootRef = FirebaseDatabase.getInstance().getReference();
         // Construct a GeoDataClient.
         mGeoDataClient = Places.getGeoDataClient(this, null);
 
         // Construct a PlaceDetectionClient.
         mPlaceDetectionClient = Places.getPlaceDetectionClient(this, null);
+        uid = mAuth.getCurrentUser().getUid();
+        System.out.println("--------------------------------------" + uid);
+
 
         location = (Button) findViewById(R.id.getLocation);
         schedule = (Button) findViewById(R.id.getSchedule);
+        jobTitle = (EditText) findViewById(R.id.jobTitle);
+        jobDescription = (EditText) findViewById(R.id.jobDescription);
         jobSched = (EditText) findViewById(R.id.jobSchedule);
         jobLoc = (EditText) findViewById(R.id.jobLocation);
+        jobPay = (EditText) findViewById(R.id.jobPay);
+        postJob = findViewById(R.id.postJob);
 
         location.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +96,22 @@ public class JobPostingActivity extends AppCompatActivity implements DatePickerD
                 DatePickerDialog datePickerDialog = new DatePickerDialog(JobPostingActivity.this, JobPostingActivity.this,
                         year, month, day);
                 datePickerDialog.show();
+            }
+        });
+
+        postJob.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                jobid = mRootRef.child("Jobs").push().getKey();
+                HashMap<String, String> jobMap = new HashMap<>();
+                jobMap.put("Giver", uid);
+                jobMap.put("Title", String.valueOf(jobTitle.getText()));
+                jobMap.put("Description", String.valueOf(jobDescription.getText()));
+                jobMap.put("Location", String.valueOf(jobLoc.getText()));
+                jobMap.put("Schedule", String.valueOf(jobSched.getText()));
+                jobMap.put("Pay", String.valueOf(jobPay.getText()));
+
+                mRootRef.child("Jobs").child(jobid).setValue(jobMap);
             }
         });
     }
