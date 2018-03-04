@@ -148,9 +148,8 @@ public class SignInActivity extends AppCompatActivity implements
                                                 if (task.isSuccessful()) {
 
                                                     Intent mainIntent = new Intent(SignInActivity.this, RegisterActivity.class);
-                                                    mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                                     startActivity(mainIntent);
-                                                    finish();
+
                                                 }
                                             }
                                         });

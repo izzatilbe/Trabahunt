@@ -15,6 +15,7 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,8 +24,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
     private static final int GALLERY_PICK = 1;
     private FirebaseUser current_user;
     private String uid;
+    private String download_url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,16 +61,14 @@ public class RegisterActivity extends AppCompatActivity {
         mRootRef = FirebaseDatabase.getInstance().getReference();
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         uid = current_user.getUid();
+        mImageStorage = FirebaseStorage.getInstance().getReference();
         mPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent galleryIntent = new Intent();
                 galleryIntent.setType("image/*");
                 galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-
                 startActivityForResult(Intent.createChooser(galleryIntent, "SELECT IMAGE"), GALLERY_PICK);
-
             }
         });
 
@@ -79,8 +81,6 @@ public class RegisterActivity extends AppCompatActivity {
                     type = "Giver";
 
                 register_user(type);
-
-
             }
         });
     }
@@ -88,17 +88,19 @@ public class RegisterActivity extends AppCompatActivity {
     private void register_user(String type) {
 
         mDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
-        mDatabase.child("Type").setValue(type).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+        HashMap<String, String> photoMap = new HashMap<>();
+        photoMap.put("Photo", download_url);
+
+        mRootRef.child("Images").child(uid).setValue(photoMap);
+        mDatabase.child("Type").setValue(type).addOnCompleteListener(new OnCompleteListener<Void>(){
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-
                 if (task.isSuccessful()) {
-
-                    Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
-                    mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    Intent mainIntent = new Intent(RegisterActivity.this, JobPostingActivity.class);
                     startActivity(mainIntent);
-                    finish();
                 }
+
             }
         });
 
@@ -117,19 +119,13 @@ public class RegisterActivity extends AppCompatActivity {
 
             final String push_id = user_pic.getKey();
 
-
-            StorageReference filepath = mImageStorage.child("profile_images").child( push_id + ".jpg");
-
+            StorageReference filepath = mImageStorage.child("profile_images").child(push_id + ".jpg");
             filepath.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
                     if(task.isSuccessful()){
-
-                        String download_url = task.getResult().getDownloadUrl().toString();
-
-
-
+                        download_url = task.getResult().getDownloadUrl().toString();
+                        Picasso.with(mPhoto.getContext()).load(download_url).into(mPhoto);
                     }
 
                 }

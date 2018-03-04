@@ -45,9 +45,7 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.main_logout_btn) {
 
             FirebaseAuth.getInstance().signOut();
-
             sendToSignIn();
-
         }
 
         return true;
@@ -56,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
